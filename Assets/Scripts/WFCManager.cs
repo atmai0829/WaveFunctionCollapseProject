@@ -36,14 +36,22 @@ public class WFCManager : MonoBehaviour
             SetupDefaultTiles();
         }
 
-        // Setup UI listeners
-        generateButton.onClick.AddListener(GenerateMap);
-        randomSeedButton.onClick.AddListener(GenerateRandomSeed);
-        tilesetModeDropdown.onValueChanged.AddListener(OnTilesetModeChanged);
+        // Setup UI listeners with null checks
+        if (generateButton != null)
+            generateButton.onClick.AddListener(GenerateMap);
+        
+        if (randomSeedButton != null)
+            randomSeedButton.onClick.AddListener(GenerateRandomSeed);
+        
+        if (tilesetModeDropdown != null)
+            tilesetModeDropdown.onValueChanged.AddListener(OnTilesetModeChanged);
 
         // Set default values
-        widthInputField.text = "20";
-        heightInputField.text = "20";
+        if (widthInputField != null)
+            widthInputField.text = "20";
+        
+        if (heightInputField != null)
+            heightInputField.text = "20";
 
         // Generate initial map
         GenerateMap();
@@ -84,20 +92,26 @@ public class WFCManager : MonoBehaviour
 
     private void OnTilesetModeChanged(int value)
     {
-        customTilesetPanel.SetActive(value == 1);
+        if (customTilesetPanel != null)
+        {
+            customTilesetPanel.SetActive(value == 1);
+        }
     }
 
     private void GenerateRandomSeed()
     {
         int seed = UnityEngine.Random.Range(0, 1000000);
-        seedInputField.text = seed.ToString();
+        if (seedInputField != null)
+        {
+            seedInputField.text = seed.ToString();
+        }
     }
 
     private void GenerateMap()
     {
         // Parse inputs
         int? seed = null;
-        if (!string.IsNullOrEmpty(seedInputField.text))
+        if (seedInputField != null && !string.IsNullOrEmpty(seedInputField.text))
         {
             if (int.TryParse(seedInputField.text, out int parsedSeed))
             {
@@ -105,14 +119,17 @@ public class WFCManager : MonoBehaviour
             }
         }
 
-        if (!int.TryParse(widthInputField.text, out int width))
+        int width = 20;
+        int height = 20;
+        
+        if (widthInputField != null && int.TryParse(widthInputField.text, out int parsedWidth))
         {
-            width = 20;
+            width = parsedWidth;
         }
 
-        if (!int.TryParse(heightInputField.text, out int height))
+        if (heightInputField != null && int.TryParse(heightInputField.text, out int parsedHeight))
         {
-            height = 20;
+            height = parsedHeight;
         }
 
         // Validate dimensions
@@ -123,7 +140,7 @@ public class WFCManager : MonoBehaviour
         string[] tiles;
         Dictionary<string, List<string>> rules;
 
-        if (tilesetModeDropdown.value == 1)
+        if (tilesetModeDropdown != null && tilesetModeDropdown.value == 1)
         {
             // Custom tileset
             if (!ParseCustomTileset(out tiles, out rules, out tileColorMap))
@@ -161,8 +178,12 @@ public class WFCManager : MonoBehaviour
         int actualSeed = wfc.GetSeed();
 
         // Update UI
-        currentSeedText.text = $"Current Seed: {actualSeed}";
-        if (string.IsNullOrEmpty(seedInputField.text))
+        if (currentSeedText != null)
+        {
+            currentSeedText.text = $"Current Seed: {actualSeed}";
+        }
+        
+        if (seedInputField != null && string.IsNullOrEmpty(seedInputField.text))
         {
             seedInputField.text = actualSeed.ToString();
         }
@@ -176,6 +197,12 @@ public class WFCManager : MonoBehaviour
         tiles = null;
         rules = null;
         colorMap = null;
+
+        if (customTilesetInput == null || string.IsNullOrEmpty(customTilesetInput.text))
+        {
+            Debug.LogError("Custom tileset input is not assigned or empty");
+            return false;
+        }
 
         try
         {
