@@ -5,6 +5,7 @@ A Unity implementation of the Wave Function Collapse algorithm for procedural ti
 ## Features
 
 - **Three-Tile Color System**: Generate maps with blue, green, and yellow tiles
+- **Image Import**: Import any image and generate maps based on its patterns and colors
 - **Adjacency Rules**: 
   - Yellow can touch blue and green
   - Blue and green cannot touch each other
@@ -22,7 +23,9 @@ Assets/
 ├── Scripts/
 │   ├── WaveFunctionCollapse.cs  - Core WFC algorithm
 │   ├── WFCManager.cs             - Main UI controller and map generator
-│   └── TileConfig.cs             - Tile configuration classes
+│   ├── TileConfig.cs             - Tile configuration classes
+│   ├── ImageToWFC.cs             - Image analysis for WFC generation
+│   └── ImageWFCExample.cs        - Example script for programmatic image import
 ├── Scenes/
 │   └── MainScene.unity           - Main scene with UI and map display
 └── Prefabs/
@@ -73,6 +76,41 @@ Attach the `WFCManager.cs` script to a GameObject and assign:
 3. Modify seed, width, height values in the UI
 4. Click "Generate Map" to create a new map
 5. Click "Random Seed" to generate a random seed value
+
+### Generate from Image
+
+You can import an image and generate maps based on its patterns:
+
+#### Using WFCManager (UI Mode)
+1. In the WFCManager inspector, find the "Image Import" section
+2. Assign a Texture2D to the "Source Image" field
+3. Set "Image Tile Size" (1 = per-pixel analysis, higher values = larger pattern tiles)
+4. In the Tileset Mode dropdown, select "From Image" (option 2)
+5. Click "Generate Map" to create a map based on the image patterns
+
+**Important**: The source image must have Read/Write enabled in its import settings:
+- Select the image in the Project window
+- In the Inspector, check "Read/Write Enabled"
+- Click "Apply"
+
+#### Using ImageWFCExample Script (Programmatic)
+1. Create an empty GameObject
+2. Add the `ImageWFCExample` component
+3. Assign your source image (must be readable)
+4. Configure generation settings (output size, seed, tile size)
+5. Press Play and then press Spacebar to generate
+
+#### How It Works
+The image analyzer:
+1. Scans the source image and identifies unique colors/tiles
+2. Analyzes adjacency patterns between neighboring tiles
+3. Builds a ruleset based on which colors appear next to each other
+4. Uses WFC to generate new maps that follow the same patterns
+
+Example use cases:
+- Import a small hand-drawn tile pattern to generate larger variations
+- Analyze existing game maps to create similar procedural maps
+- Use pixel art as input to generate similar-looking patterns
 
 ### Custom Tileset Format
 

@@ -12,6 +12,7 @@ public class WFCManager : MonoBehaviour
     [SerializeField] private TMP_Dropdown tilesetModeDropdown;
     [SerializeField] private TMP_InputField customTilesetInput;
     [SerializeField] private GameObject customTilesetPanel;
+    [SerializeField] private GameObject imageInputPanel;
     [SerializeField] private Button generateButton;
     [SerializeField] private Button randomSeedButton;
     [SerializeField] private TextMeshProUGUI currentSeedText;
@@ -23,6 +24,10 @@ public class WFCManager : MonoBehaviour
 
     [Header("Default Tileset")]
     [SerializeField] private List<TileConfig> defaultTiles;
+
+    [Header("Image Import")]
+    [SerializeField] private Texture2D sourceImage;
+    [SerializeField] private int imageTileSize = 1;
 
     private string[,] currentMap;
     private Dictionary<string, Color> tileColorMap;
@@ -92,9 +97,14 @@ public class WFCManager : MonoBehaviour
 
     private void OnTilesetModeChanged(int value)
     {
+        // value 0: Default, 1: Custom, 2: From Image
         if (customTilesetPanel != null)
         {
             customTilesetPanel.SetActive(value == 1);
+        }
+        if (imageInputPanel != null)
+        {
+            imageInputPanel.SetActive(value == 2);
         }
     }
 
@@ -146,6 +156,15 @@ public class WFCManager : MonoBehaviour
             if (!ParseCustomTileset(out tiles, out rules, out tileColorMap))
             {
                 Debug.LogError("Failed to parse custom tileset");
+                return;
+            }
+        }
+        else if (tilesetModeDropdown != null && tilesetModeDropdown.value == 2)
+        {
+            // From Image
+            if (!GenerateFromImage(out tiles, out rules, out tileColorMap))
+            {
+                Debug.LogError("Failed to generate from image");
                 return;
             }
         }
@@ -308,6 +327,49 @@ public class WFCManager : MonoBehaviour
             float horizontalSize = (mapWidth / 2f + 2f) / mainCamera.aspect;
 
             mainCamera.orthographicSize = Mathf.Max(verticalSize, horizontalSize);
+        }
+    }
+
+    private bool GenerateFromImage(out string[] tiles, out Dictionary<string, List<string>> rules, out Dictionary<string, Color> colorMap)
+    {
+        tiles = null;
+        rules = null;
+        colorMap = null;
+
+        if (sourceImage == null)
+        {
+            Debug.LogError("No source image assigned. Please assign a source image in the inspector.");
+            return false;
+        }
+
+        // Ensure the texture is readable
+        if (!sourceImage.isReadable)
+        {
+            Debug.LogError("Source image is not readable. Please enable Read/Write in the texture import settings.");
+            return false;
+        }
+
+        try
+        {
+            // Create image analyzer
+            ImageToWFC imageAnalyzer = new ImageToWFC(sourceImage, imageTileSize);
+            
+            // Analyze the image
+            imageAnalyzer.Analyze();
+
+            // Get extracted data
+            tiles = imageAnalyzer.GetTiles();
+            rules = imageAnalyzer.GetRules();
+            colorMap = imageAnalyzer.GetColorMap();
+
+            Debug.Log($"Successfully analyzed image: {imageAnalyzer.GetTileCount()} unique tiles found");
+            
+            return true;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"Failed to analyze image: {e.Message}");
+            return false;
         }
     }
 }
