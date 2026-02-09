@@ -39,7 +39,7 @@ public class ImageWFCExample : MonoBehaviour
     /// </summary>
     void Update()
     {
-        if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
+        if (Keyboard.current?.spaceKey.wasPressedThisFrame ?? false)
         {
             GenerateFromImage();
         }
