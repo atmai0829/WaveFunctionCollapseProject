@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using System.Collections.Generic;
 
 /// <summary>
@@ -38,7 +39,7 @@ public class ImageWFCExample : MonoBehaviour
     /// </summary>
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Keyboard.current?.spaceKey.wasPressedThisFrame ?? false)
         {
             GenerateFromImage();
         }
