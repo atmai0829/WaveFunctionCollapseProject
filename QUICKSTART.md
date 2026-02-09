@@ -156,13 +156,71 @@ public class TestWFC : MonoBehaviour
 - Make sure all three scripts are in Assets/Scripts/
 - Check Unity is using .NET 4.x or later (Project Settings → Player → Other Settings)
 
+### "Texture is not readable"
+- Select the texture in Project window
+- In Inspector, enable "Read/Write Enabled" under Advanced settings
+- Click Apply
+
+### "No unique tiles found" or "Failed to generate from image"
+- Check that your image has distinct colors
+- Try a simpler image with fewer colors
+- Increase imageTileSize if using a large detailed image
+
 ## Next Steps
 
 1. Complete full UI setup (see SETUP.md)
 2. Test with different seeds
 3. Try custom tilesets
-4. Modify tile colors and rules
-5. Export generated maps
+4. **Try image import feature** (see below)
+5. Modify tile colors and rules
+6. Export generated maps
+
+## Using Image Import (New Feature!)
+
+### Quick Test Without UI
+
+1. Create an empty GameObject in your scene
+2. Add the `TestImageWFC` component
+3. Press Play
+4. Check Console for test results
+
+This validates that the image analysis system is working correctly.
+
+### Example with ImageWFCExample
+
+1. Create an empty GameObject
+2. Add `ImageWFCExample` script component
+3. In Inspector, assign:
+   - Source Image: Any texture with Read/Write enabled
+   - Output Width/Height: Desired map size (e.g., 20x20)
+   - Tile Size: 1 for pixel-level, higher for pattern tiles
+4. Press Play
+5. Press **Spacebar** to generate
+6. A new map will be created based on the image patterns!
+
+### Preparing Images for Import
+
+For any image you want to use:
+1. Select the image in Project window
+2. In Inspector, find "Advanced" section
+3. Check **"Read/Write Enabled"**
+4. Click **Apply**
+
+### Tips for Best Results
+
+- **Small, simple images** (e.g., 10x10 pixels) work best for learning patterns
+- **Pixel art** creates distinct, recognizable patterns
+- **Hand-drawn tile samples** can generate larger variations
+- **Too many unique colors** (100+) may create complex rulesets that fail to generate
+
+### Creating Test Images
+
+You can create simple test images in any image editor:
+1. Create a small image (e.g., 5x5 pixels)
+2. Paint a simple pattern with distinct colors
+3. Save as PNG
+4. Import to Unity and enable Read/Write
+5. Assign to WFCManager or ImageWFCExample
 
 ## Support
 
