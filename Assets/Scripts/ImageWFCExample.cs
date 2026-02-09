@@ -126,6 +126,13 @@ public class ImageWFCExample : MonoBehaviour
                 tile.transform.position = position;
                 tile.transform.localScale = new Vector3(renderTileSize * 0.95f, renderTileSize * 0.95f, 1);
                 
+                // Remove collider (not needed for visual-only tiles)
+                MeshCollider collider = tile.GetComponent<MeshCollider>();
+                if (collider != null)
+                {
+                    Destroy(collider);
+                }
+                
                 if (mapContainer != null)
                 {
                     tile.transform.parent = mapContainer;
@@ -143,6 +150,35 @@ public class ImageWFCExample : MonoBehaviour
 
                 generatedTiles.Add(tile);
             }
+        }
+        
+        // Adjust camera to fit the generated map
+        AdjustCamera(width, height);
+    }
+
+    /// <summary>
+    /// Adjust camera to fit the generated map
+    /// </summary>
+    private void AdjustCamera(int width, int height)
+    {
+        Camera mainCamera = Camera.main;
+        if (mainCamera != null)
+        {
+            // Calculate map dimensions
+            float mapWidth = width * renderTileSize;
+            float mapHeight = height * renderTileSize;
+
+            // Calculate required orthographic size with some padding
+            float verticalSize = mapHeight / 2f + 2f;
+            float horizontalSize = (mapWidth / 2f + 2f) / mainCamera.aspect;
+
+            mainCamera.orthographicSize = Mathf.Max(verticalSize, horizontalSize);
+            
+            Debug.Log($"Camera adjusted to fit {width}x{height} map (orthographic size: {mainCamera.orthographicSize})");
+        }
+        else
+        {
+            Debug.LogWarning("Main Camera not found. Make sure there's a camera tagged as MainCamera in the scene.");
         }
     }
 
