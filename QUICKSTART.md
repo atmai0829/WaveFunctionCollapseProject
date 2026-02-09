@@ -149,8 +149,18 @@ public class TestWFC : MonoBehaviour
 
 ### "Map not visible"
 - Switch to Scene view (not Game view)
-- Check Main Camera is Orthographic
+- Check Main Camera is Orthographic (not Perspective)
 - Verify MapContainer has generated child objects
+- For ImageWFCExample: The camera is automatically adjusted, but ensure there's a camera tagged as "MainCamera"
+- Check the Console for camera adjustment messages
+- Verify the camera is positioned at (0, 0, -10) or another appropriate position
+
+### "ImageWFCExample tiles not showing"
+- Ensure Main Camera is set to **Orthographic** projection
+- Check that the camera is tagged as "MainCamera"
+- Look in Scene view instead of Game view to see the tiles
+- Verify the Console shows "Camera adjusted to fit..." message after generation
+- Check that tiles are being created (look in Hierarchy window for child objects)
 
 ### Compilation Errors
 - Make sure all three scripts are in Assets/Scripts/
@@ -188,15 +198,23 @@ This validates that the image analysis system is working correctly.
 
 ### Example with ImageWFCExample
 
-1. Create an empty GameObject
-2. Add `ImageWFCExample` script component
-3. In Inspector, assign:
+1. **Set up the camera** (if not already set):
+   - Select Main Camera in Hierarchy
+   - Set Projection to **Orthographic**
+   - Set Position to (0, 0, -10)
+   - The script will automatically adjust the orthographic size to fit the generated map
+
+2. Create an empty GameObject
+3. Add `ImageWFCExample` script component
+4. In Inspector, assign:
    - Source Image: Any texture with Read/Write enabled
    - Output Width/Height: Desired map size (e.g., 20x20)
    - Tile Size: 1 for pixel-level, higher for pattern tiles
-4. Press Play
-5. Press **Spacebar** to generate
-6. A new map will be created based on the image patterns!
+   - Map Container: (Optional) An empty GameObject to organize tiles
+5. Press Play
+6. Press **Spacebar** to generate
+7. A new map will be created based on the image patterns!
+8. The camera will automatically adjust to show the entire generated map
 
 ### Preparing Images for Import
 
