@@ -171,7 +171,7 @@ public class TestWFC : MonoBehaviour
 1. Complete full UI setup (see SETUP.md)
 2. Test with different seeds
 3. Try custom tilesets
-4. **Try image import feature** (see below)
+4. Try image import feature (see below)
 5. Modify tile colors and rules
 6. Export generated maps
 

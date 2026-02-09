@@ -44,6 +44,8 @@ public class ImageToWFC
                     colorToTileName[tileColor] = tileName;
                     tileNameToColor[tileName] = tileColor;
                     adjacencyRules[tileName] = new HashSet<string>();
+                    // Allow tiles to be adjacent to themselves
+                    adjacencyRules[tileName].Add(tileName);
                     nextTileId++;
                 }
             }
@@ -74,9 +76,6 @@ public class ImageToWFC
                     adjacencyRules[currentTile].Add(bottomTile);
                     adjacencyRules[bottomTile].Add(currentTile);
                 }
-
-                // Allow tiles to be adjacent to themselves
-                adjacencyRules[currentTile].Add(currentTile);
             }
         }
     }
