@@ -127,10 +127,10 @@ public class ImageWFCExample : MonoBehaviour
                 tile.transform.localScale = new Vector3(renderTileSize * 0.95f, renderTileSize * 0.95f, 1);
                 
                 // Remove collider (not needed for visual-only tiles)
-                MeshCollider collider = tile.GetComponent<MeshCollider>();
-                if (collider != null)
+                MeshCollider meshCollider = tile.GetComponent<MeshCollider>();
+                if (meshCollider != null)
                 {
-                    Destroy(collider);
+                    Destroy(meshCollider);
                 }
                 
                 if (mapContainer != null)
@@ -168,9 +168,10 @@ public class ImageWFCExample : MonoBehaviour
             float mapWidth = width * renderTileSize;
             float mapHeight = height * renderTileSize;
 
-            // Calculate required orthographic size with some padding
-            float verticalSize = mapHeight / 2f + 2f;
-            float horizontalSize = (mapWidth / 2f + 2f) / mainCamera.aspect;
+            // Calculate required orthographic size with some padding (2 units on each side)
+            const float cameraPadding = 2f;
+            float verticalSize = mapHeight / 2f + cameraPadding;
+            float horizontalSize = (mapWidth / 2f + cameraPadding) / mainCamera.aspect;
 
             mainCamera.orthographicSize = Mathf.Max(verticalSize, horizontalSize);
             
