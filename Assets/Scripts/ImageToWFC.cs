@@ -6,7 +6,7 @@ using UnityEngine;
 /// </summary>
 public class ColorEqualityComparer : IEqualityComparer<Color>
 {
-    // Tolerance for color comparison - 2/255 to handle compression artifacts
+    // Tolerance for color comparison to handle compression artifacts and filtering
     private const float COLOR_TOLERANCE = 0.01f; // ~2.5/255, handles JPEG/PNG compression and filtering
     
     public bool Equals(Color c1, Color c2)
