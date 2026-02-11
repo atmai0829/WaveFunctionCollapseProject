@@ -27,7 +27,8 @@ public class ColorEqualityComparer : IEqualityComparer<Color>
         int b = Mathf.RoundToInt(c.b * 255f);
         int a = Mathf.RoundToInt(c.a * 255f);
         
-        // Combine hash codes
+        // Combine hash codes using standard prime number algorithm
+        // 17 (seed) and 31 (multiplier) are primes that reduce hash collisions
         unchecked
         {
             int hash = 17;
