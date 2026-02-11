@@ -7,7 +7,7 @@ using UnityEngine;
 public class ColorEqualityComparer : IEqualityComparer<Color>
 {
     // Tolerance for color comparison to handle compression artifacts and filtering
-    private const float COLOR_TOLERANCE = 0.01f; // ~2.5/255, handles JPEG/PNG compression and filtering
+    private const float COLOR_TOLERANCE = 0.01f; // ~2.55/255 (1% tolerance), handles JPEG/PNG compression and filtering
     
     public bool Equals(Color c1, Color c2)
     {
@@ -98,16 +98,30 @@ public class ImageToWFC
                     adjacencyRules[tileName] = new HashSet<string>();
                     // Allow tiles to be adjacent to themselves
                     adjacencyRules[tileName].Add(tileName);
-                    
-                    // Debug: Log each unique color found
-                    Debug.Log($"Found unique color {nextTileId}: RGB({tileColor.r:F3}, {tileColor.g:F3}, {tileColor.b:F3}, {tileColor.a:F3}) at position ({x}, {y})");
-                    
                     nextTileId++;
                 }
             }
         }
         
-        Debug.Log($"Total unique colors found: {nextTileId}");
+        // Log summary after analysis
+        Debug.Log($"ImageToWFC Analysis Complete: Found {nextTileId} unique colors");
+        
+        // If too many colors, warn the user
+        if (nextTileId > 50)
+        {
+            Debug.LogWarning($"ImageToWFC: Found {nextTileId} unique colors. This may create a complex ruleset. " +
+                           "Consider using higher tileSize or simplifying your image.");
+        }
+        
+        // Debug: Log each unique color found (only if count is reasonable)
+        if (nextTileId <= 20)
+        {
+            foreach (var kvp in tileNameToColor)
+            {
+                Color c = kvp.Value;
+                Debug.Log($"  {kvp.Key}: RGB({c.r:F3}, {c.g:F3}, {c.b:F3}, {c.a:F3})");
+            }
+        }
 
         // Second pass: build adjacency rules by analyzing neighboring tiles
         for (int y = 0; y < sourceImage.height; y += tileSize)
