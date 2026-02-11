@@ -6,19 +6,22 @@ using UnityEngine;
 /// </summary>
 public class ColorEqualityComparer : IEqualityComparer<Color>
 {
+    // Tolerance for color comparison - 2/255 to handle compression artifacts
+    private const float COLOR_TOLERANCE = 0.01f; // ~2.5/255, handles JPEG/PNG compression and filtering
+    
     public bool Equals(Color c1, Color c2)
     {
-        // Compare with small epsilon to handle floating-point precision
-        const float epsilon = 0.004f; // ~1/255, handles single color value difference
-        return Mathf.Abs(c1.r - c2.r) < epsilon &&
-               Mathf.Abs(c1.g - c2.g) < epsilon &&
-               Mathf.Abs(c1.b - c2.b) < epsilon &&
-               Mathf.Abs(c1.a - c2.a) < epsilon;
+        // Compare with tolerance to handle floating-point precision and compression artifacts
+        return Mathf.Abs(c1.r - c2.r) <= COLOR_TOLERANCE &&
+               Mathf.Abs(c1.g - c2.g) <= COLOR_TOLERANCE &&
+               Mathf.Abs(c1.b - c2.b) <= COLOR_TOLERANCE &&
+               Mathf.Abs(c1.a - c2.a) <= COLOR_TOLERANCE;
     }
 
     public int GetHashCode(Color c)
     {
-        // Quantize to 256 levels (0-255) to ensure same visual color has same hash
+        // Quantize to 256 levels with rounding to ensure consistent hashing
+        // Apply the same tolerance by rounding to nearest color bucket
         int r = Mathf.RoundToInt(c.r * 255f);
         int g = Mathf.RoundToInt(c.g * 255f);
         int b = Mathf.RoundToInt(c.b * 255f);
@@ -52,7 +55,13 @@ public class ImageToWFC
     /// <summary>
     /// Create an ImageToWFC analyzer
     /// </summary>
-    /// <param name="image">Source image to analyze</param>
+    /// <param name="image">Source image to analyze. 
+    /// For best results, ensure texture import settings are:
+    /// - Read/Write Enabled: TRUE
+    /// - Compression: None
+    /// - Filter Mode: Point (no filter)
+    /// - Texture Type: Default or Sprite
+    /// </param>
     /// <param name="tileSize">Size of each tile in pixels (default: 1 for per-pixel analysis)</param>
     public ImageToWFC(Texture2D image, int tileSize = 1)
     {
@@ -61,6 +70,13 @@ public class ImageToWFC
         this.colorToTileName = new Dictionary<Color, string>(new ColorEqualityComparer());
         this.tileNameToColor = new Dictionary<string, Color>();
         this.adjacencyRules = new Dictionary<string, HashSet<string>>();
+        
+        // Warn if texture filtering is enabled (can cause color bleeding)
+        if (image.filterMode != FilterMode.Point)
+        {
+            Debug.LogWarning($"ImageToWFC: Texture '{image.name}' has filter mode '{image.filterMode}'. " +
+                           "For accurate color analysis, set Filter Mode to 'Point (no filter)' in import settings.");
+        }
     }
 
     /// <summary>
@@ -82,10 +98,16 @@ public class ImageToWFC
                     adjacencyRules[tileName] = new HashSet<string>();
                     // Allow tiles to be adjacent to themselves
                     adjacencyRules[tileName].Add(tileName);
+                    
+                    // Debug: Log each unique color found
+                    Debug.Log($"Found unique color {nextTileId}: RGB({tileColor.r:F3}, {tileColor.g:F3}, {tileColor.b:F3}, {tileColor.a:F3}) at position ({x}, {y})");
+                    
                     nextTileId++;
                 }
             }
         }
+        
+        Debug.Log($"Total unique colors found: {nextTileId}");
 
         // Second pass: build adjacency rules by analyzing neighboring tiles
         for (int y = 0; y < sourceImage.height; y += tileSize)
