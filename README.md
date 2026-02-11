@@ -88,10 +88,19 @@ You can import an image and generate maps based on its patterns:
 4. In the Tileset Mode dropdown, select "From Image" (option 2)
 5. Click "Generate Map" to create a map based on the image patterns
 
-**Important**: The source image must have Read/Write enabled in its import settings:
+**Important**: The source image must have proper import settings:
 - Select the image in the Project window
-- In the Inspector, check "Read/Write Enabled"
+- In the Inspector, configure these settings:
+  - **Read/Write Enabled**: ✓ Check this box
+  - **Compression**: None (to preserve exact colors)
+  - **Filter Mode**: Point (no filter) - prevents color bleeding
+  - **Format**: Automatic or RGBA32 for best color accuracy
 - Click "Apply"
+
+**Note**: If you're getting extra colors that aren't in your source image, make sure:
+1. Filter Mode is set to "Point (no filter)" - other modes blend pixels causing color variations
+2. Compression is set to "None" - compression can introduce color artifacts
+3. Your image is saved in a lossless format (PNG recommended, not JPEG)
 
 #### Using ImageWFCExample Script (Programmatic)
 1. Create an empty GameObject

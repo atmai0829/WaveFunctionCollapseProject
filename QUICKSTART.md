@@ -218,27 +218,41 @@ This validates that the image analysis system is working correctly.
 
 ### Preparing Images for Import
 
+**CRITICAL**: To prevent extra unwanted colors from appearing, configure these import settings:
+
 For any image you want to use:
 1. Select the image in Project window
-2. In Inspector, find "Advanced" section
-3. Check **"Read/Write Enabled"**
-4. Click **Apply**
+2. In Inspector, configure:
+   - **Read/Write Enabled**: ✓ Check this box (REQUIRED)
+   - **Compression**: Set to **"None"** (prevents color artifacts)
+   - **Filter Mode**: Set to **"Point (no filter)"** (prevents color bleeding between pixels)
+   - **Max Size**: Match your image size or higher
+   - **Format**: Automatic or RGBA32
+3. Click **Apply**
+
+**Why these settings matter**:
+- **Filter Mode**: Bilinear/Trilinear filtering blends neighboring pixels, creating intermediate colors
+- **Compression**: Can introduce color variations due to lossy compression
+- **Read/Write**: Required to access pixel data
 
 ### Tips for Best Results
 
 - **Small, simple images** (e.g., 10x10 pixels) work best for learning patterns
 - **Pixel art** creates distinct, recognizable patterns
+- **Use PNG format** - never use JPEG (lossy compression creates color artifacts)
 - **Hand-drawn tile samples** can generate larger variations
-- **Too many unique colors** (100+) may create complex rulesets that fail to generate
+- **Limit colors** - Too many unique colors (100+) may create complex rulesets that fail to generate
+- **Check the Console** - Debug logs will show exactly which colors were found
 
 ### Creating Test Images
 
 You can create simple test images in any image editor:
 1. Create a small image (e.g., 5x5 pixels)
-2. Paint a simple pattern with distinct colors
-3. Save as PNG
-4. Import to Unity and enable Read/Write
+2. Paint a simple pattern with distinct colors (e.g., only black and purple)
+3. Save as **PNG** (lossless format)
+4. Import to Unity with settings above (especially Filter Mode: Point, Compression: None)
 5. Assign to WFCManager or ImageWFCExample
+6. Check Console for "Found unique color" messages to verify only your colors appear
 
 ## Support
 
