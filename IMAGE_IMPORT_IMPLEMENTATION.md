@@ -108,6 +108,7 @@ string[,] result = wfc.GetResult();
 1. **First Pass**: Scan entire image to identify unique colors
    - Each unique color becomes a tile type
    - Tile names are auto-generated (tile_0, tile_1, etc.)
+   - Uses ColorEqualityComparer to handle floating-point precision in color comparison
    
 2. **Initialization**: Create adjacency rule set for each tile
    - Each tile can be adjacent to itself (for solid regions)
@@ -121,6 +122,13 @@ string[,] result = wfc.GetResult();
    - Array of tile names
    - Dictionary of adjacency lists
    - Color mapping for rendering
+
+### Color Comparison
+- **ColorEqualityComparer**: Custom IEqualityComparer<Color> for Dictionary lookups
+  - Uses epsilon comparison (0.004f ≈ 1/255) to handle floating-point precision
+  - Quantizes colors to 256 levels (0-255) for consistent hash codes
+  - Ensures visually identical colors are treated as the same tile
+  - Prevents duplicate tiles caused by floating-point rounding
 
 ### Performance Considerations
 - Small images (10x10 to 100x100 pixels) work best
@@ -177,6 +185,7 @@ string[,] result = wfc.GetResult();
 - Fixed documentation formatting
 - Consistent error handling
 - Proper null checks throughout
+- **Fixed color comparison bug** with ColorEqualityComparer to handle floating-point precision
 
 ## Integration Points
 - WFCManager: Dropdown option 2 = "From Image"
