@@ -125,7 +125,7 @@ string[,] result = wfc.GetResult();
 
 ### Color Comparison
 - **ColorEqualityComparer**: Custom IEqualityComparer<Color> for Dictionary lookups
-  - Uses epsilon comparison (0.01f ≈ 2.55/255, or 1% tolerance) to handle floating-point precision and compression artifacts
+  - Uses epsilon comparison (0.01f = 2.55/255, or 1% tolerance) to handle floating-point precision and compression artifacts
   - Higher tolerance prevents texture filtering and compression from creating phantom colors
   - Quantizes colors to 256 levels (0-255) for consistent hash codes
   - Ensures visually identical colors are treated as the same tile

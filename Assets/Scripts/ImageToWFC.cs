@@ -7,7 +7,7 @@ using UnityEngine;
 public class ColorEqualityComparer : IEqualityComparer<Color>
 {
     // Tolerance for color comparison to handle compression artifacts and filtering
-    private const float COLOR_TOLERANCE = 0.01f; // ~2.55/255 (1% tolerance), handles JPEG/PNG compression and filtering
+    private const float COLOR_TOLERANCE = 0.01f; // 2.55/255 (1% tolerance), handles JPEG/PNG compression and filtering
     
     public bool Equals(Color c1, Color c2)
     {
@@ -20,8 +20,8 @@ public class ColorEqualityComparer : IEqualityComparer<Color>
 
     public int GetHashCode(Color c)
     {
-        // Quantize to 256 levels with rounding to ensure consistent hashing
-        // Apply the same tolerance by rounding to nearest color bucket
+        // Quantize to 256 levels (0-255) for consistent hashing
+        // This ensures colors that are equal within tolerance get the same hash
         int r = Mathf.RoundToInt(c.r * 255f);
         int g = Mathf.RoundToInt(c.g * 255f);
         int b = Mathf.RoundToInt(c.b * 255f);
