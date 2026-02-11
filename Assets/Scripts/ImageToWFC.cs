@@ -2,6 +2,42 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
+/// Color equality comparer that handles floating-point precision issues
+/// </summary>
+public class ColorEqualityComparer : IEqualityComparer<Color>
+{
+    public bool Equals(Color c1, Color c2)
+    {
+        // Compare with small epsilon to handle floating-point precision
+        const float epsilon = 0.004f; // ~1/255, handles single color value difference
+        return Mathf.Abs(c1.r - c2.r) < epsilon &&
+               Mathf.Abs(c1.g - c2.g) < epsilon &&
+               Mathf.Abs(c1.b - c2.b) < epsilon &&
+               Mathf.Abs(c1.a - c2.a) < epsilon;
+    }
+
+    public int GetHashCode(Color c)
+    {
+        // Quantize to 256 levels (0-255) to ensure same visual color has same hash
+        int r = Mathf.RoundToInt(c.r * 255f);
+        int g = Mathf.RoundToInt(c.g * 255f);
+        int b = Mathf.RoundToInt(c.b * 255f);
+        int a = Mathf.RoundToInt(c.a * 255f);
+        
+        // Combine hash codes
+        unchecked
+        {
+            int hash = 17;
+            hash = hash * 31 + r;
+            hash = hash * 31 + g;
+            hash = hash * 31 + b;
+            hash = hash * 31 + a;
+            return hash;
+        }
+    }
+}
+
+/// <summary>
 /// Analyzes an input image to extract tiles and adjacency rules for WFC algorithm
 /// </summary>
 public class ImageToWFC
@@ -22,7 +58,7 @@ public class ImageToWFC
     {
         this.sourceImage = image;
         this.tileSize = tileSize;
-        this.colorToTileName = new Dictionary<Color, string>();
+        this.colorToTileName = new Dictionary<Color, string>(new ColorEqualityComparer());
         this.tileNameToColor = new Dictionary<string, Color>();
         this.adjacencyRules = new Dictionary<string, HashSet<string>>();
     }
